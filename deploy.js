@@ -1,17 +1,15 @@
 const { ethers } = require("ethers");
 const fs = require("fs");
+require("dotenv").config();
 
 async function main() {
   //connecting with blockchain using Ganasche
   const provider = new ethers.providers.JsonRpcProvider(
-    "http://127.0.0.1:7545"
+    process.env.RPC_URL
   );
 
   //Initialize the wallet
-  const wallet = new ethers.Wallet(
-    "0x8c873d802509f6ad120c71e3e940ae8e095055de9d9510bb3fdd3cfac0719234",
-    provider
-  );
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
   //utf8-encoding for file
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
   const binary = fs.readFileSync(
@@ -28,12 +26,12 @@ async function main() {
   //console.log(contract.deployTransaction);
   //console.log("Here is the tx receipt:");
   //console.log(deploymentReceipt);
-  const currentFavNumber=await contract.retrieve();
+  const currentFavNumber = await contract.retrieve();
   console.log(`Current Favorite Number: ${currentFavNumber.toString()}`);
-  const transactionResponse=await contract.store("7");
-  const transactionReceipt=await transactionResponse.wait(1);
-  const updatedFavNumber=await contract.retrieve()
-  console.log(`Updated Favorite Number is: ${updatedFavNumber}`)
+  const transactionResponse = await contract.store("7");
+  const transactionReceipt = await transactionResponse.wait(1);
+  const updatedFavNumber = await contract.retrieve();
+  console.log(`Updated Favorite Number is: ${updatedFavNumber}`);
 }
 
 main()
