@@ -1,15 +1,22 @@
-const { ethers } = require("ethers");
+const { ethers, Wallet } = require("ethers");
 const fs = require("fs");
 require("dotenv").config();
 
 async function main() {
   //connecting with blockchain using Ganasche
-  const provider = new ethers.providers.JsonRpcProvider(
-    process.env.RPC_URL
-  );
+  const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 
   //Initialize the wallet
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  //const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+  const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
+
+  let wallet = new ethers.Wallet.fromEncryptedJsonSync(
+    encryptedJson,
+    process.env.PRIVATE_KEY_PASSWORD
+  );
+
+  wallet = await wallet.connect(provider);
   //utf8-encoding for file
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
   const binary = fs.readFileSync(
